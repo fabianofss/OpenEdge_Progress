@@ -104,7 +104,7 @@ PROCEDURE process :
         end.
         
         /* Buscar cidades de um estado */
-        if p_sigla <> "" then do:
+        if p_estado <> "" then do:
             for each mgcad.cidade
                 where mgcad.cidade.estado = p_estado
                 no-lock:
