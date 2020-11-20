@@ -74,6 +74,11 @@ END PROCEDURE.
 
 PROCEDURE process :
     if p_filtro = false then do:
+        for each mgcad.cidade
+            no-lock:
+            create ttCidade.
+            buffer-copy mgcad.cidade to ttCidade.
+        end.
     end.
     else do:
         /* Buscar cidade pelo nome */
