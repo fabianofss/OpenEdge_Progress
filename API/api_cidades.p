@@ -33,7 +33,7 @@ define temp-table ttCidade
 
 /* ************************  Function Implementations ***************** */
 FUNCTION LongcharToObject RETURNS JsonObject ( input jsonChar as longchar ) :
-    /*  fun‡Æo que transforma um longchar em objeto json */
+    /*  funâ€¡Ã†o que transforma um longchar em objeto json */
     define variable jsonInput as JsonObject no-undo.
     define variable objParse as ObjectModelParser no-undo.
     define variable jsonOutput as JsonObject no-undo.  
@@ -64,7 +64,7 @@ PROCEDURE LerParametros :
         p_sigla  = get-value(trim("sigla"))
         p_estado = get-value(trim("estado"))
         p_pais   = get-value(trim("pais"))
-        p_filtro = logical(get-value(trim("pais"))).
+        p_filtro = logical(get-value(trim("filtro"))).
 END PROCEDURE.
 
 PROCEDURE outputHeader :
