@@ -73,6 +73,11 @@ PROCEDURE outputHeader :
 END PROCEDURE.
 
 PROCEDURE process :
+    create ttCidade.
+    assign
+        ttCidade.CallBack = "erro"
+        ttCidade.mgsRetorno = "Nenhuma cidade localizada!".
+
     if p_filtro = false then do:
         for each mgcad.cidade
             no-lock:
@@ -133,7 +138,10 @@ PROCEDURE process :
             ttCidade.mgsRetorno = "Nenhuma cidade localizada!".
         next.
     end.
-
+    else
+        assign
+            ttCidade.CallBack = "ok"
+            ttCidade.mgsRetorno = "".
 END PROCEDURE.
 
 PROCEDURE process-web-request :
