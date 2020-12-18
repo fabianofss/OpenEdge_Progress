@@ -1,9 +1,6 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v10r12 GUI
-&ANALYZE-RESUME
 /* Connected Databases 
 */
 &Scoped-define WINDOW-NAME C-Win
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS C-Win 
 /*------------------------------------------------------------------------
 
   File: 
@@ -40,6 +37,7 @@ CREATE WIDGET-POOL.
 define temp-table ttProgramas
     field caminho as character format "x(60)"
     field dt-mod  as date
+    field tipo    as character
     field nm-comp as character format "x(60)"
     field nome    as character format "x(15)".
 
@@ -48,11 +46,7 @@ define temp-table ttErro
     field coluna as character
     field erro as character.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -77,7 +71,7 @@ define temp-table ttErro
 
 
 /* Definitions for BROWSE brw-programas                                 */
-&Scoped-define FIELDS-IN-QUERY-brw-programas ttProgramas.nome ttProgramas.caminho   
+&Scoped-define FIELDS-IN-QUERY-brw-programas ttProgramas.nome ttProgramas.tipo ttProgramas.caminho   
 &Scoped-define ENABLED-FIELDS-IN-QUERY-brw-programas   
 &Scoped-define SELF-NAME brw-programas
 &Scoped-define QUERY-STRING-brw-programas FOR EACH ttProgramas
@@ -100,11 +94,6 @@ ch-tp-w ch-tp-p ch-tp-i
 
 /* Custom List Definitions                                              */
 /* List-1,List-2,List-3,List-4,List-5,List-6                            */
-
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
-
-
 
 /* ***********************  Control Definitions  ********************** */
 
@@ -134,7 +123,7 @@ DEFINE VARIABLE edt-contemTexto AS CHARACTER FORMAT "X(256)":U
      SIZE 28.57 BY .88 NO-UNDO.
 
 DEFINE VARIABLE edt-dir-compilacao AS CHARACTER FORMAT "X(256)":U INITIAL "~\~\192.168.0.239~\erp~\DMS3.00~\revendas~\osp~\" 
-     LABEL "Diret¢rio Origem" 
+     LABEL "Diret√≥rio Origem" 
      VIEW-AS FILL-IN 
      SIZE 56 BY .88 NO-UNDO.
 
@@ -159,33 +148,26 @@ DEFINE VARIABLE ch-tp-w AS LOGICAL INITIAL yes
      SIZE 6 BY .75 NO-UNDO.
 
 /* Query definitions                                                    */
-&ANALYZE-SUSPEND
 DEFINE QUERY brw-erro-compilacao FOR 
       ttErro SCROLLING.
 
 DEFINE QUERY brw-programas FOR 
       ttProgramas SCROLLING.
-&ANALYZE-RESUME
 
 /* Browse definitions                                                   */
 DEFINE BROWSE brw-erro-compilacao
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _DISPLAY-FIELDS brw-erro-compilacao C-Win _FREEFORM
   QUERY brw-erro-compilacao DISPLAY
       ttErro.linha format "x(8)"
  ttErro.coluna format "x(8)"
  ttErro.erro
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
     WITH NO-ROW-MARKERS SEPARATORS SIZE 109 BY 5.67
-         TITLE "Erros de compilaá∆o" FIT-LAST-COLUMN.
+         TITLE "Erros de compila√ß√£o" FIT-LAST-COLUMN.
 
 DEFINE BROWSE brw-programas
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _DISPLAY-FIELDS brw-programas C-Win _FREEFORM
   QUERY brw-programas DISPLAY
       ttProgramas.nome column-label "Nome"
- ttProgramas.caminho column-label "Local do!Programa"
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+      ttProgramas.tipo
+      ttProgramas.caminho column-label "Local do!Programa"
     WITH NO-ROW-MARKERS SEPARATORS SIZE 109 BY 10.25
          TITLE "Lista de Programas" FIT-LAST-COLUMN.
 
@@ -215,17 +197,14 @@ DEFINE FRAME DEFAULT-FRAME
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
 /* Settings for THIS-PROCEDURE
    Type: Window
    Allow: Basic,Browse,DB-Fields,Window,Query
    Other Settings: COMPILE
  */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 IF SESSION:DISPLAY-TYPE = "GUI":U THEN
   CREATE WINDOW C-Win ASSIGN
          HIDDEN             = YES
@@ -247,13 +226,11 @@ IF SESSION:DISPLAY-TYPE = "GUI":U THEN
          SENSITIVE          = yes.
 ELSE {&WINDOW-NAME} = CURRENT-WINDOW.
 /* END WINDOW DEFINITION                                                */
-&ANALYZE-RESUME
 
 
 
 /* ***********  Runtime Attributes and AppBuilder Settings  *********** */
 
-&ANALYZE-SUSPEND _RUN-TIME-ATTRIBUTES
 /* SETTINGS FOR WINDOW C-Win
   VISIBLE,,RUN-PERSISTENT                                               */
 /* SETTINGS FOR FRAME DEFAULT-FRAME
@@ -263,29 +240,23 @@ ELSE {&WINDOW-NAME} = CURRENT-WINDOW.
 IF SESSION:DISPLAY-TYPE = "GUI":U AND VALID-HANDLE(C-Win)
 THEN C-Win:HIDDEN = no.
 
-/* _RUN-TIME-ATTRIBUTES-END */
-&ANALYZE-RESUME
 
 
 /* Setting information for Queries and Browse Widgets fields            */
 
-&ANALYZE-SUSPEND _QUERY-BLOCK BROWSE brw-erro-compilacao
 /* Query rebuild information for BROWSE brw-erro-compilacao
      _START_FREEFORM
 OPEN QUERY {&SELF-NAME} FOR EACH ttErro.
      _END_FREEFORM
      _Query            is OPENED
 */  /* BROWSE brw-erro-compilacao */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _QUERY-BLOCK BROWSE brw-programas
 /* Query rebuild information for BROWSE brw-programas
      _START_FREEFORM
 OPEN QUERY {&SELF-NAME} FOR EACH ttProgramas.
      _END_FREEFORM
      _Query            is OPENED
 */  /* BROWSE brw-programas */
-&ANALYZE-RESUME
 
  
 
@@ -294,7 +265,6 @@ OPEN QUERY {&SELF-NAME} FOR EACH ttProgramas.
 /* ************************  Control Triggers  ************************ */
 
 &Scoped-define SELF-NAME C-Win
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CONTROL C-Win C-Win
 ON END-ERROR OF C-Win /* Compilador programas */
 OR ENDKEY OF {&WINDOW-NAME} ANYWHERE DO:
   /* This case occurs when the user presses the "Esc" key.
@@ -303,11 +273,7 @@ OR ENDKEY OF {&WINDOW-NAME} ANYWHERE DO:
   IF THIS-PROCEDURE:PERSISTENT THEN RETURN NO-APPLY.
 END.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CONTROL C-Win C-Win
 ON WINDOW-CLOSE OF C-Win /* Compilador programas */
 DO:
   /* This event will close the window and terminate the procedure.  */
@@ -315,18 +281,13 @@ DO:
   RETURN NO-APPLY.
 END.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
-
 
 &Scoped-define SELF-NAME btn-buscar
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CONTROL btn-buscar C-Win
 ON CHOOSE OF btn-buscar IN FRAME DEFAULT-FRAME /* Buscar arquivos */
 DO:
     DEFINE VARIABLE tipoArquivo AS CHARACTER NO-UNDO.
     DEFINE VARIABLE pathBusca AS CHARACTER NO-UNDO.
     DEFINE VARIABLE vAux AS CHARACTER NO-UNDO.
-    DEFINE VARIABLE vNome AS CHARACTER NO-UNDO.
     DEFINE VARIABLE linha AS CHARACTER NO-UNDO.
     DEFINE VARIABLE contemTexto AS LOGICAL NO-UNDO.
 
@@ -338,17 +299,17 @@ DO:
 
     if pathBusca = "" then do:
         MESSAGE 
-            "Informe um diret¢rio para busca!"
+            "Informe um diret√≥rio para busca!"
             VIEW-AS ALERT-BOX INFORMATION BUTTONS OK.
         return.
     end.
 
-    /* Se n∆o foi informado "\" no fim do caminho vamos adicionar */
+    /* Se n√£o foi informado "\" no fim do caminho vamos adicionar */
     if substring(pathBusca,length(pathBusca) - 1, 1) <> "\" then do:
         assign pathBusca = pathBusca + "\".
     end.
 
-    /* Extená‰es de arquivos que vamos considerar na busca */
+    /* Exten√ß√µes de arquivos que vamos considerar na busca */
     if ch-tp-r:CHECKED in frame {&frame-name} then
         assign tipoArquivo = tipoArquivo + "*.r,".
 
@@ -361,23 +322,28 @@ DO:
     if ch-tp-i:CHECKED in frame {&frame-name} then
         assign tipoArquivo = tipoArquivo + "*.i,".
 
-    /* Vamos usar comando do DOS para listar os arquivos no diret¢rio */
+    /* Vamos usar comando do DOS para listar os arquivos no diret√≥rio */
     INPUT  THROUGH  VALUE("dir /b/s " + pathBusca + tipoArquivo).
     REPEAT:
         /* o comando dir vai retornar o caminho completo do arquivo localizado
-           ao executar o import o sistema est† registrando essa informaá∆o na primeira coluna de nossa tabela
-           que no caso Ç ttProgramas.caminho */
+           ao executar o import o sistema est√° registrando essa informa√ß√£o na primeira coluna de nossa tabela
+           que no caso √© ttProgramas.caminho */
         create ttProgramas.
         IMPORT ttProgramas no-error.
         if NOT ERROR-STATUS:ERROR then do:
             /* agora que temos o path completo do arquivo podemos usar o file-info para obter dados deste arquivo */
             ASSIGN FILE-INFO:FILE-NAME = ttProgramas.caminho.
 
-            assign ttProgramas.dt-mod  = DATE(FILE-INFO:FILE-MOD-DATE) no-error. /* Data de modificaá∆o */
-            /* estraindo o nome entre a ultima barra e o ultimo ponto antes da extená∆o do arquivo */
-            assign vNome = substring(ttProgramas.caminho, r-index(ttProgramas.caminho, '\') + 1).
-            assign vNome = substring(vNome, 1, r-index(vNome, '.') - 1).
-            assign ttProgramas.nome  = vNome.
+            assign ttProgramas.dt-mod  = DATE(FILE-INFO:FILE-MOD-DATE) no-error. /* Data de modifica√ß√£o */
+            /* estraindo o nome entre a ultima barra e o ultimo ponto antes da exten√ß√£o do arquivo */
+            assign vAux = substring(ttProgramas.caminho, r-index(ttProgramas.caminho, '\') + 1).
+            assign vAux = substring(vAux, 1, r-index(vAux, '.') - 1).
+            assign ttProgramas.nome  = vAux.
+
+            /* Obter a extens√£o do programa */
+            assign vAux = ttProgramas.caminho.
+            assign vAux = substring(vAux, r-index(vAux, '.'), (length(vAux) - (r-index(vAux, '.') - 1))).
+            assign ttProgramas.tipo  = vAux.
         end.
     END.                                                                                          
     INPUT CLOSE.
@@ -388,7 +354,7 @@ DO:
         for each ttProgramas
             where ttProgramas.caminho <> "":
             assign contemTexto = false.
-            /* carrega o conte£do do arquivo */
+            /* carrega o conte√∫do do arquivo */
             input from value(ttProgramas.caminho).
             repeat:
                 /* carrega linha a linha do arquivo */
@@ -400,7 +366,7 @@ DO:
                 end.
             end.
             input close.
-            /* Se n∆o encontrar nada ent∆o remove o arquivo da lista */
+            /* Se n√£o encontrar nada ent√£o remove o arquivo da lista */
             if contemTexto = false then 
                 delete ttProgramas.
         end.
@@ -417,18 +383,16 @@ DO:
 
 END.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
-
 
 &Scoped-define SELF-NAME btn-compilar
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CONTROL btn-compilar C-Win
 ON CHOOSE OF btn-compilar IN FRAME DEFAULT-FRAME /* Compilar programas */
 DO:
     define variable i        as integer no-undo initial 0.
 
-    for each ttProgramas:
-        /* Executa a compilaá∆o do programa */
+    for each ttProgramas
+        where lookup(ttProgramas.tipo,".w,.p") > 0 /* Vamos compilar apenas arquivos .w e .p */
+        :
+        /* Executa a compila√ß√£o do programa */
         compile value(ttProgramas.caminho) save no-error.
         if compiler:error then do:
             do i = 1 to compiler:num-messages:
@@ -444,12 +408,8 @@ DO:
     {&OPEN-QUERY-brw-erro-compilacao}
 END.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
-
 
 &Scoped-define SELF-NAME btn-remover
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CONTROL btn-remover C-Win
 ON CHOOSE OF btn-remover IN FRAME DEFAULT-FRAME /* Remover selecionado */
 DO:
     if available ttProgramas then do:
@@ -458,12 +418,8 @@ DO:
     end.
 END.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
-
 
 &Scoped-define SELF-NAME btn-remover-todos
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CONTROL btn-remover-todos C-Win
 ON CHOOSE OF btn-remover-todos IN FRAME DEFAULT-FRAME /* Remover todos */
 DO:
     for each ttProgramas:
@@ -472,14 +428,10 @@ DO:
     {&OPEN-QUERY-brw-programas}
 END.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
-
 
 &Scoped-define BROWSE-NAME brw-erro-compilacao
 &UNDEFINE SELF-NAME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK C-Win 
 
 
 /* ***************************  Main Block  *************************** */
@@ -506,13 +458,9 @@ DO ON ERROR   UNDO MAIN-BLOCK, LEAVE MAIN-BLOCK
     WAIT-FOR CLOSE OF THIS-PROCEDURE.
 END.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
-
 
 /* **********************  Internal Procedures  *********************** */
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE disable_UI C-Win  _DEFAULT-DISABLE
 PROCEDURE disable_UI :
 /*------------------------------------------------------------------------------
   Purpose:     DISABLE the User Interface
@@ -528,10 +476,6 @@ PROCEDURE disable_UI :
   IF THIS-PROCEDURE:PERSISTENT THEN DELETE PROCEDURE THIS-PROCEDURE.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
-
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE enable_UI C-Win  _DEFAULT-ENABLE
 PROCEDURE enable_UI :
 /*------------------------------------------------------------------------------
   Purpose:     ENABLE the User Interface
@@ -551,7 +495,3 @@ PROCEDURE enable_UI :
   {&OPEN-BROWSERS-IN-QUERY-DEFAULT-FRAME}
   VIEW C-Win.
 END PROCEDURE.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
-
